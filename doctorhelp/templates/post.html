@@ -42,7 +42,9 @@
 
         {% for comment in comments %}
         <div class="commentbox">
-          <p class="usernamehold"><b>{{ comment.author.username }}</b></p>
+          {% if comment.author.doctor %}
+          <p class="usernamehold"><b><a href="{{ url_for('profile', username=comment.author.username) }}">{{ comment.author.username }}</a></b></p>
+          {% endif %}
           {% for tag in doctor_comment_tags[comment] %}
           <div class="chip doctortag"><a href="{{ url_for('category', categories=tag) }}">{{ tag }}</a></div>
           {% endfor %}
