@@ -145,7 +145,10 @@ def specific_post(id):
     comments = Comment.query.filter_by(post_id=id)
     doctor_comment_tags = dict()
     for comment in comments:
-        doctor_comment_tags[comment] = list(set(post.fields.split(",")) & set(comment.author.fields.split(",")))
+        if comment.author.doctor:
+            doctor_comment_tags[comment] = list(set(post.fields.split(",")) & set(comment.author.fields.split(",")))
+        else:
+            doctor_comment_tags[comment] = []
     fields = post.fields.split(",")
     age = calculate_age(post.author.dob)
     name = post.author.name
