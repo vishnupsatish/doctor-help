@@ -20,7 +20,7 @@
                 <li><a class="btn blue waves-effect" href="{{ url_for('new') }}">Ask for Advice</a></li>
                 {% endif %}
                 {% if current_user.admin %}
-                <li><a class="btn red waves-effect" href="{{ url_for('new') }}">Admin</a></li>
+                <li><a class="btn red waves-effect" href="/admin">Admin</a></li>
                 {% endif %}
                 {% else %}
                 <li><a href="{{ url_for('all_posts') }}">All</a></li>
@@ -43,7 +43,7 @@
     <li><a href="{{ url_for('new') }}">Ask for Advice</a></li>
     {% endif %}
     {% if current_user.admin %}
-    <li><a href="{{ url_for('new') }}">Admin</a></li>
+    <li><a href="/admin">Admin</a></li>
     {% endif %}
     {% else %}
     <li><a href="{{ url_for('all_posts') }}">All</a></li>
