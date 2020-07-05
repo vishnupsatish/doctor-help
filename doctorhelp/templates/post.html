@@ -20,7 +20,7 @@
         <p>{{ post.content }}</p>
       </div>
       {% if current_user.is_authenticated %}
-      {% if current_user.doctor %}
+      {% if current_user.doctor or post.author.id == current_user.id %}
       <div class="divider"></div>
       <div class="card-content white-text"> Add a Comment</div>
       <div class="row">
