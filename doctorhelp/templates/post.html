@@ -43,7 +43,7 @@
         {% for comment in comments %}
         <div class="commentbox">
           {% if comment.author.doctor %}
-          <p class="usernamehold"><b><a class="black-text" href="{{ url_for('profile', username=comment.author.username) }}">{{ comment.author.username }}</a></b></p>
+          <p class="usernamehold"><b><a class="white-text" href="{{ url_for('profile', username=comment.author.username) }}">{{ comment.author.username }}</a></b></p>
           {% else %}
           <p class="usernamehold"><b>{{ comment.author.username }}</b></p>
           {% endif %}
