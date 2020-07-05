@@ -8,3 +8,6 @@ $(document).ready(function() {
 
 });
 
+function openNew() {
+    document.location.href = "/new"
+}

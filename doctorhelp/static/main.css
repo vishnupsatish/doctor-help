@@ -297,3 +297,7 @@ a.article-title:hover {
 .ml-20px{
   margin-left: 20px;
 }
+
+.all-width {
+  width: 100%;
+}

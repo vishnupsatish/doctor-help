@@ -1,6 +1,6 @@
 from datetime import datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flaskblog import db, login_manager, app
+from doctorhelp import db, login_manager, app
 from flask_login import UserMixin
 
 
@@ -21,6 +21,7 @@ class User(db.Model, UserMixin):
     doctor = db.Column(db.Boolean, nullable=False)
     posts = db.relationship('Post', backref='author', lazy=True)
     comments = db.relationship('Comment', backref='author', lazy=True)
+    admin = db.Column(db.Boolean)
 
 
     def __repr__(self):

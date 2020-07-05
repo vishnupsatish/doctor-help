@@ -1,0 +1,24 @@
+{% extends "navbar.html" %}
+{% block content %}
+<img
+  src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=753&q=80"
+  class="backgroundimg">
+<h1>{{ doctor.name }}</h1>
+<h2>{{ doctor.username }}</h2>
+
+<div class="row">
+  <div class="col s12">
+    <div class="card blue lighten-2">
+      <div class="card-content white-text">
+        <span class="card-title">Areas of Expertise</span>
+        {% for expert in doctor.fields.split(",") %}
+        <div class="chip"><a href="{{ url_for('category', categories=expert) }}">
+            {{ expert }}
+          </a></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% include "fab.html" %}
+{% endblock content %}

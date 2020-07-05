@@ -1,0 +1,13 @@
+{% if current_user.is_authenticated %}
+
+{% if not current_user.doctor %}
+
+<div class="fixed-action-btn">
+    <button onclick="openNew()" class="waves-effect btn-floating btn-large red">
+        <i class="large material-icons">add</i>
+    </button>
+</div>
+
+{% endif %}
+
+{% endif %}
