@@ -1,0 +1,68 @@
+{% extends "navbar.html" %}
+{% block content %}
+<img src="https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1078&q=80" class="backgroundimg">
+
+<div class="row mt-10px" >
+    <form action="" method="POST" class="col s12">
+        {{ form.hidden_tag() }}
+        <div class="row">
+            <div class="input-field col s12">
+                {{ form.title.label(class="form-control-label") }}
+                {% if form.title.errors %}
+                {{ form.title(class="validate invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.title.errors %}
+                    <span class="error-feedback">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.title(class="validate") }}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                {{ form.content.label(class="form-control-label") }}
+                {% if form.content.errors %}
+                {{ form.content(class="validate invalid materialize-textarea") }}
+                <div class="invalid-feedback">
+                    {% for error in form.content.errors %}
+                    <span class="error-feedback">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.content(class="validate materialize-textarea") }}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s12">
+                {{ form.fields.label(class="active") }}
+                {% if form.fields.errors %}
+                {{ form.fields(class="validate") }}
+                <div class="invalid-feedback">
+                    {% for error in form.fields.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.fields(class="validate") }}
+                {% endif %}
+            </div>
+        </div>
+
+        <label class="label1">
+            {{ form.anonymous }}
+            <span>{{ form.anonymous.label }}</span>
+        </label>
+
+        <div class="form-group">
+            {{ form.submit(class="btn waves-effect blue white-text") }}
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}
+

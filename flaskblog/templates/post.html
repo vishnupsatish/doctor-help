@@ -1,0 +1,61 @@
+{% extends "navbar.html" %}
+{% block content %}
+<img src="https://cdn.pixabay.com/photo/2019/07/30/16/37/sea-4373364_1280.jpg" class="backgroundimg">
+
+<div class="row">
+  <div class="col s12">
+    <div class="card blue lighten-2">
+      <div class="card-content white-text">
+        <h3 class="white-text">{{ post.title }}</h3>
+
+        {% for field in fields %}
+        <div class="chip doctortag"><a href="{{ url_for('category', categories=field) }}">{{ field }}</a></div>
+        {% endfor %}
+        <div>
+          <p><b>{{ username }}</b></p>
+          <p class="fontlarge"><br><b>Name:</b> {{ name }} <b>Age:</b> {{ age }} <b>Gender:</b>
+            {{ post.author.gender }}</p>
+        </div>
+        <br>
+        <p>{{ post.content }}</p>
+      </div>
+      {% if current_user.is_authenticated %}
+      {% if current_user.doctor %}
+      <div class="divider"></div>
+      <div class="card-content white-text"> Add a Comment</div>
+      <div class="row">
+        <form action="" method="POST">
+          <div id="commentinp" class="input-field col s12">
+            <textarea required id="comment-post" class="materialize-textarea" name="comment"></textarea>
+            <label for="comment-post" id="addacomment">Make a Comment</label></div>
+          <button class="btn waves-effect waves-dark comment-submit" type="submit" name="action">Submit
+            <i class="material-icons right">chat_bubble_outline</i>
+          </button>
+      </div>
+      </form>
+      {% endif %}
+      {% endif %}
+
+      <div class="divider"></div>
+      <div class="card-content white-text">
+        <span class="card-title">Comments</span>
+
+        {% for comment in comments %}
+        <div class="commentbox">
+          <p class="usernamehold"><b>{{ comment.author.username }}</b></p>
+          {% for tag in doctor_comment_tags[comment] %}
+          <div class="chip doctortag"><a href="{{ url_for('category', categories=tag) }}">{{ tag }}</a></div>
+          {% endfor %}
+          <p>{{ comment.content }}</p>
+        </div>
+        {% endfor %}
+
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+{% endblock content %}

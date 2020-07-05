@@ -1,0 +1,69 @@
+{% extends "navbar.html" %}
+{% block content %}
+
+
+<div class="row mt-10px">
+    <form action="" method="POST" class="col s12">
+        {{ form.hidden_tag() }}
+</div>
+<div class="row">
+    <div class="input-field col s12">
+        {{ form.email.label(class="form-control-label") }}
+        {% if form.email.errors %}
+        {{ form.email(class="validate invalid") }}
+        <div class="invalid-feedback">
+            {% for error in form.email.errors %}
+            <span class="error-feedback">{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        {{ form.email(class="validate") }}
+        {% endif %}
+    </div>
+</div>
+<div class="row">
+    <div class="input-field col s12">
+        {{ form.password.label(class="form-control-label") }}
+        {% if form.password.errors %}
+        {{ form.password(class="validate invalid") }}
+        <div class="invalid-feedback">
+            {% for error in form.password.errors %}
+            <span class="error-feedback">{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        {{ form.password(class="validate") }}
+        {% endif %}
+    </div>
+
+</div>
+
+
+<div class="switch">
+    <label>
+      Patient
+      {{ form.doctor_or_patient }}
+      <span class="lever"></span>
+      Doctor
+    </label>
+  </div>
+
+        <label class="label1">
+            {{ form.remember }}
+            <span>{{ form.remember.label }}</span>
+        </label>
+
+<div class="form-group">
+    {{ form.submit(class="btn waves-effect blue") }}
+</div>
+</form>
+
+<div class="border-top pt-3">
+    <small class="text-muted">
+        Need An Account? <a class="ml-2" href="{{ url_for('register') }}">Sign Up Now</a>
+    </small>
+</div>
+</div>
+
+
+{% endblock content %}

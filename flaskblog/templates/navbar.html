@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block navbar %}
+<div class="navbar-fixed">
+    <nav class="blue lighten-2">
+        <div class="nav-wrapper">
+            <!--<a style="margin-left: 20px;" href="{{ url_for('home') }}" class="brand-logo">Logo</a>-->
+            <a class="brand-logo ml-20px" href="{{ url_for('home') }}"><img class="image-logo" src="{{ url_for('static', filename='images/logo.png') }}"></a>
+
+            <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            <ul class="right hide-on-med-and-down">
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('all_posts') }}">All</a></li>
+                <li><a href="{{ url_for('category') }}">Category</a></li>
+                <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+                {% if not current_user.doctor %}
+
+                <li><a class="btn blue waves-effect" href="{{ url_for('new') }}">Ask for Advice</a></li>
+                {% endif %}
+                {% else %}
+                <li><a href="{{ url_for('all_posts') }}">All</a></li>
+                <li><a href="{{ url_for('category') }}">Category</a></li>
+                <li><a href="{{ url_for('login') }}">Log In</a></li>
+                <li><a class="btn blue waves-effect" href="{{ url_for('register') }}">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<ul class="sidenav" id="mobile-demo">
+    {% if current_user.is_authenticated %}
+    <li><a href="{{ url_for('home') }}">Home</a></li>
+    <li><a href="{{ url_for('all_posts') }}">All</a></li>
+    <li><a href="{{ url_for('category') }}">Category</a></li>
+    <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+    {% if not current_user.doctor %}
+    <li><a href="{{ url_for('new') }}">Ask for Advice</a></li>
+    {% endif %}
+    {% else %}
+    <li><a href="{{ url_for('all_posts') }}">All</a></li>
+    <li><a href="{{ url_for('category') }}">Category</a></li>
+    <li><a href="{{ url_for('register') }}">Register</a></li>
+    <li><a href="{{ url_for('login') }}">Log In</a></li>
+    {% endif %}
+</ul>
+{% endblock %}

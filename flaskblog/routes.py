@@ -1,0 +1,170 @@
+import os
+import secrets
+import datetime
+from flask import render_template, url_for, flash, redirect, request, abort
+from flaskblog import app, db, bcrypt, mail, admin
+from flaskblog.forms import (RegistrationForm, DoctorRegistrationForm, LoginForm, PostForm, CategorySearchForm)
+from flaskblog.models import User, Post, Comment
+from flask_login import login_user, current_user, logout_user, login_required
+from flask_mail import Message
+from flask_admin.contrib.sqla import ModelView
+
+
+
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Post, db.session))
+admin.add_view(ModelView(Comment, db.session))
+
+@app.route("/")
+@app.route("/home")
+@login_required
+def home():
+    if current_user.doctor:
+        posts = Post.query.order_by(Post.date.desc()).all()
+        relevant_posts = []
+        for post in posts:
+            if len(relevant_posts) == 5:
+                break
+            if len(list(set(post.fields.split(",")) & set(current_user.fields.split(",")))):
+                relevant_posts.append(post)
+        return render_template('home_doctor.html', current_user=current_user, posts=relevant_posts)
+    posts = Post.query.filter_by(author=current_user)
+    return render_template('home_patient.html', current_user=current_user, posts=posts)
+
+
+
+@app.route('/register')
+def register():
+    return render_template("register.html")
+
+
+@app.route("/register/patient", methods=['GET', 'POST'])
+def register_patient():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password, doctor=False, gender=form.gender.data, dob=datetime.datetime.strptime(form.dob.data, "%b %d, %Y"), name=form.name.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Your account has been created! You are now able to log in', 'success')
+        return redirect(url_for('login'))
+    return render_template('register_patient.html', title='Register', form=form)
+
+
+@app.route("/register/doctor", methods=['GET', 'POST'])
+def register_doctor():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = DoctorRegistrationForm()
+    
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password, fields=",".join(form.fields.data), doctor=True, name=form.name.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Your account has been created! You are now able to log in', 'success')
+        return redirect(url_for('login'))
+    return render_template('register_doctor.html', title='Register', form=form)
+
+
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data) and user.doctor == form.doctor_or_patient.data:
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('home'))
+        else:
+            flash('Login Unsuccessful. Please check email and password', 'danger')
+    return render_template('login.html', title='Login', form=form)
+
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
+
+@app.route('/new', methods=["GET", "POST"])
+@login_required
+def new():
+    if current_user.doctor:
+        flash("Doctors do not have permission to ask for advice.", 'warning')
+        return redirect(url_for('home'))
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(content=form.content.data, title=form.title.data, anonymous=form.anonymous.data, user_id=current_user.id, fields=",".join(form.fields.data))
+        db.session.add(post)
+        db.session.commit()
+    return render_template('new.html', form=form)
+
+
+def calculate_age(born):
+    today = datetime.date.today()
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+@app.route('/post/<int:id>', methods=["GET", "POST"])
+def specific_post(id):
+    if request.method == "POST":
+        comment_content = request.values.get('comment')
+        comment = Comment(content=comment_content, user_id=current_user.id, post_id=id)
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url_for('specific_post', id=id))
+    post = Post.query.get_or_404(id)
+    comments = Comment.query.filter_by(post_id=id)
+    doctor_comment_tags = dict()
+    for comment in comments:
+        doctor_comment_tags[comment] = list(set(post.fields.split(",")) & set(comment.author.fields.split(",")))
+    fields = post.fields.split(",")
+    age = calculate_age(post.author.dob)
+    name = post.author.name
+    username = post.author.username
+    if post.anonymous == True:
+        name = "Anonymous"
+        username = "Anonymous"
+    return render_template('post.html', age=age, name=name, fields=fields, post=post, comments=comments, current_user=current_user, doctor_comment_tags=doctor_comment_tags, username=username)
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+
+@app.route("/posts/all")
+def all_posts():
+    page = request.args.get('page', 1, type=int)
+    posts = Post.query.order_by(Post.date.desc()).paginate(page=page, per_page=5)
+    return render_template('view_posts.html', posts=posts, current_page="all_posts", categories="")
+
+@app.route('/category', methods=["GET", "POST"])
+def category():
+    categories = request.args.get('categories', None)
+    print(categories)
+    if categories == None:
+        form = CategorySearchForm()
+        if form.validate_on_submit():
+            return redirect(url_for('category', categories=",".join(form.category.data)))
+        return render_template('search_category.html', form=form)
+    posts = Post.query.order_by(Post.date.desc())
+    relevant_posts = []
+    for post in posts:
+        if len(relevant_posts) == 5:
+            break
+        if len(list(set(post.fields.split(",")) & set([x for x in categories.split(',')]))) > 0:
+            relevant_posts.append(post)
+    print(relevant_posts)
+    return render_template('category_posts.html', posts=relevant_posts, results=str(len(relevant_posts)) + " results for the categories " + categories.replace(",", ", "))
+
+
+
+@app.route('/profile/<username>')
+def profile(username):
+    doctor = User.query.filter_by(username=username, doctor=True).first_or_404()
+    return render_template("doctorprofile.html", doctor=doctor)

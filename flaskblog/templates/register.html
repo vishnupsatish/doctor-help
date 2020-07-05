@@ -1,0 +1,8 @@
+{% extends "navbar.html" %}
+{% block content %}
+<img src="https://images.unsplash.com/photo-1414468707615-eafa0922e554?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=967&q=80" class="backgroundimg">
+<div class="register-buttons">
+    <a href="{{ url_for('register_doctor') }}" class="waves-effect waves-light btn-large mt-40 register-button"><i class="material-icons register-icons">local_hospital</i>Register as Doctor</a>
+    <a href="{{ url_for('register_patient') }}" class="waves-effect waves-light btn-large mt-40 register-button"><i class="material-icons register-icons">supervisor_account</i>Register as Patient</a>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "navbar.html" %}
+{% block content %}
+
+<img
+  src="https://images.unsplash.com/photo-1588623358844-fd118c056dfc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80"
+  class="backgroundimg">
+
+
+{% for post in posts.items %}
+<a href="{{ url_for('specific_post', id=post.id) }}">
+<div class="row">
+  <div class="col s12">
+    <div class="card blue lighten-2">
+      <div class="card-content white-text">
+        <span class="card-title">{{ post.title }}</span>
+        <p class="post-snippet">{{ post.content }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+</a>
+{% endfor %}
+
+<div id="org1">
+    <div id="org2">
+{% if categories == "" %}
+{% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+{% if page_num %}
+  {% if posts.page == page_num %}
+    <a class="btn btn-info mb-4" href="{{ url_for(current_page, page=page_num) }}">{{ page_num }}</a>
+  {% else %}
+    <a class="btn btn-outline-info mb-4" href="{{ url_for(current_page, page=page_num) }}">{{ page_num }}</a>
+  {% endif %}
+{% else %}
+  ...
+{% endif %}
+{% endfor %}
+{% else %}
+{% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+{% if page_num %}
+  {% if posts.page == page_num %}
+    <a class="btn btn-info mb-4" href="{{ url_for(current_page, page=page_num, categories=categories) }}">{{ page_num }}</a>
+  {% else %}
+    <a class="btn btn-outline-info mb-4" href="{{ url_for(current_page, page=page_num, categories=categories) }}">{{ page_num }}</a>
+  {% endif %}
+{% else %}
+  ...
+{% endif %}
+{% endfor %}
+{% endif %}
+</div>
+</div>
+
+
+
+
+
+{% endblock content %}
